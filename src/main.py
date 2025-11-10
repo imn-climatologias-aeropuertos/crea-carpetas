@@ -1,24 +1,25 @@
 import flet as ft
 
 
+from __version__ import version
+from controls import StationDropdown, Station
+from config import Colors
+
+
 def main(page: ft.Page):
-    counter = ft.Text("0", size=50, data=0)
+    def dropdown_changed(e):
+        text.value = f"{station_dropdown.station.name}"
+        page.update()
 
-    def increment_click(e):
-        counter.data += 1
-        counter.value = str(counter.data)
-        counter.update()
-
-    page.floating_action_button = ft.FloatingActionButton(
-        icon=ft.Icons.ADD, on_click=increment_click
-    )
+    station_dropdown = StationDropdown(on_change=dropdown_changed)
+    text = ft.Text(f"{station_dropdown.station.name}", size=25, color=Colors.primary)
     page.add(
-        ft.SafeArea(
-            ft.Container(
-                counter,
-                alignment=ft.alignment.center,
-            ),
-            expand=True,
+        ft.Row(
+            [
+                station_dropdown,
+                text,
+            ],
+            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
         )
     )
 
