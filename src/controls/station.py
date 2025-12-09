@@ -56,12 +56,11 @@ def get_stations() -> List[ft.DropdownOption]:
     station_options = []
 
     for station in stations.keys():
-        name = stations.get(station).get("short_name")
         station_options.append(
             ft.DropdownOption(
                 key=station,
                 content=ft.Text(
-                    value=name,
+                    value=station,
                     color=Colors.black,
                     size=20,
                 ),
