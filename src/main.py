@@ -66,6 +66,9 @@ def main(page: ft.Page):
     wind_dir = ft.TextField(label="Dirección del viento (°)")
     wind_spd = ft.TextField(label="Velocidad del viento (kt)")
     temp = ft.TextField(label="Temperatura (°C)")
+    sigwx_maps = ct.SigWxMaps()
+    wind_temp_maps = ct.WindTempMaps()
+    flight_type = ct.FlightType()
 
     page.add(
         ft.Row(
@@ -93,6 +96,13 @@ def main(page: ft.Page):
                     ],
                     alignment=ft.MainAxisAlignment.END,
                     spacing=25,
+                ),
+                ft.Column(
+                    [
+                        sigwx_maps,
+                        wind_temp_maps,
+                        flight_type,
+                    ]
                 ),
             ],
             # alignment=ft.MainAxisAlignment.START,
