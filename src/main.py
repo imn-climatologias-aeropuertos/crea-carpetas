@@ -1,26 +1,24 @@
 import flet as ft
 
 
-import db
+import db.flights as db_fl
+import controls as ct
 
 from __version__ import version
-from controls import *
-from config import Colors
-from db import fetch_by_label
 
 
 def main(page: ft.Page):
-    station: Station
-    flight: Flight
+    station: ct.Station
+    flight: ct.Flight
 
-    db.create()
+    db_fl.create()
 
     # with open("./trash/vuelos.csv") as f:
     #     for line in f:
     #         line = line.split(",")
-    #         db.insert(*line)
+    #         db_fl.insert(*line)
 
-    # db.insert(
+    # db_fl.insert(
     #     "LRC618",
     #     "MROC",
     #     "KMIA",
@@ -54,10 +52,20 @@ def main(page: ft.Page):
             second_arrival_dropdown.disabled = False
         page.update()
 
-    station_dropdown = StationDropdown(on_change=station_dropdown_changed)
-    flight_dropdown = FlightDropdown(on_change=flight_dropdown_changed)
-    first_arrival_dropdown = ArrivalsDropDown(on_change=first_arrival_dropdown_changed)
-    second_arrival_dropdown = ArrivalsDropDown(label="Destino 2")
+    station_dropdown = ct.StationDropdown(on_change=station_dropdown_changed)
+    flight_dropdown = ct.FlightDropdown(on_change=flight_dropdown_changed)
+    first_arrival_dropdown = ct.ArrivalsDropDown(
+        on_change=first_arrival_dropdown_changed
+    )
+    second_arrival_dropdown = ct.ArrivalsDropDown(label="Destino 2")
+    forecaster_name = ft.TextField(label="Nombre del pronosticador")
+    document_serial = ft.TextField(label="Número de documento")
+    creation_hour = ft.TextField(label="Hora de emisión (UTC)")
+    forecast_flight_hour = ft.TextField(label="Hora del pronóstico de despegue (UTC)")
+    qnh = ft.TextField(label="QNH (hPa)")
+    wind_dir = ft.TextField(label="Dirección del viento (°)")
+    wind_spd = ft.TextField(label="Velocidad del viento (kt)")
+    temp = ft.TextField(label="Temperatura (°C)")
 
     page.add(
         ft.Row(
@@ -65,21 +73,30 @@ def main(page: ft.Page):
                 ft.Column(
                     [
                         station_dropdown,
-                        flight_dropdown,
-                    ]
-                ),
-                ft.Column(
-                    [
-                        first_arrival_dropdown,
-                    ]
-                ),
-                ft.Column(
-                    [
-                        second_arrival_dropdown,
-                    ]
+                        ft.Row(
+                            [
+                                flight_dropdown,
+                                first_arrival_dropdown,
+                                second_arrival_dropdown,
+                            ],
+                            alignment=ft.MainAxisAlignment.CENTER,
+                            spacing=15,
+                        ),
+                        forecaster_name,
+                        document_serial,
+                        creation_hour,
+                        forecast_flight_hour,
+                        qnh,
+                        wind_dir,
+                        wind_spd,
+                        temp,
+                    ],
+                    alignment=ft.MainAxisAlignment.END,
+                    spacing=25,
                 ),
             ],
-            alignment=ft.MainAxisAlignment.START,
+            # alignment=ft.MainAxisAlignment.START,
+            # vertical_alignment=ft.CrossAxisAlignment.CENTER,
         )
     )
 
