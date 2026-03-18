@@ -42,15 +42,15 @@ def get_flight_labels_options() -> List[ft.DropdownOption]:
 
 
 class FlightDropdown(ft.Dropdown):
-    def __init__(self, on_change):
+    def __init__(self, on_select):
         self.flights = get_flight_labels_options()
         super().__init__(
             enable_filter=True,
             options=self.flights,
             editable=True,
-            on_change=on_change,
+            on_select=on_select,
             label="Vuelo",
-            width=200,
+            width=150,
         )
 
     @property
@@ -61,14 +61,14 @@ class FlightDropdown(ft.Dropdown):
 
 
 class ArrivalsDropDown(ft.Dropdown):
-    def __init__(self, on_change: Optional[Callable] = None, label: str = "Destino 1"):
+    def __init__(self, on_select: Optional[Callable] = None, label: str = "Destino 1"):
         super().__init__(
             enable_filter=True,
             editable=True,
             disabled=True,
-            on_change=on_change,
+            on_select=on_select,
             label=label,
-            width=200,
+            width=150,
         )
 
     def set_options(self, *options: str, autoselect: bool = True):

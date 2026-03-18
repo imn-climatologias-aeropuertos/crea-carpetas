@@ -71,13 +71,13 @@ def get_stations() -> List[ft.DropdownOption]:
 
 
 class StationDropdown(ft.Dropdown):
-    def __init__(self, on_change):
+    def __init__(self, on_select):
         stations = get_stations()
         super().__init__(
             enable_filter=True,
             options=stations,
             editable=True,
-            on_change=on_change,
+            on_select=on_select,
             label="Estación",
             value=stations[0].key,
         )
