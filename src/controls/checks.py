@@ -25,10 +25,10 @@ class SigWxMaps(ft.Column):
 
 class WindTempMaps(ft.Column):
     def __init__(self):
-        self.map00 = ft.CupertinoCheckbox(label="00:00 UTC", value=True)
-        self.map06 = ft.CupertinoCheckbox(label="06:00 UTC", value=False)
-        self.map12 = ft.CupertinoCheckbox(label="12:00 UTC", value=False)
-        self.map18 = ft.CupertinoCheckbox(label="18:00 UTC", value=False)
+        self.map00 = ft.CupertinoCheckbox(label="+06H", value=True)
+        self.map06 = ft.CupertinoCheckbox(label="+12H", value=False)
+        self.map12 = ft.CupertinoCheckbox(label="+18H", value=False)
+        self.map18 = ft.CupertinoCheckbox(label="+24H", value=False)
         super().__init__(
             controls=[
                 ft.Text(
@@ -47,14 +47,16 @@ class WindTempMaps(ft.Column):
 
 class FlightTypeRadio(ft.Column):
     def __init__(self, on_change: ft.ControlEventHandler[ft.RadioGroup]):
-        self.high = ft.Radio(label="Alto", value="1")
-        self.low = ft.Radio(label="Bajo", value="2")
+        self.high_americas = ft.Radio(label="Alto Américas", value="1")
+        self.high_europa = ft.Radio(label="Alto Europa", value="2")
+        self.low = ft.Radio(label="Bajo", value="3")
         self.radio_group = ft.RadioGroup(
             on_change=on_change,
-            value=self.high.value,
+            value=self.high_americas.value,
             content=ft.Column(
                 controls=[
-                    self.high,
+                    self.high_americas,
+                    self.high_europa,
                     self.low,
                 ]
             ),
@@ -71,6 +73,29 @@ class FlightTypeRadio(ft.Column):
                     size=20,
                 ),
                 self.radio_group,
+            ],
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        )
+
+
+class FlightTypeCheckbox(ft.Column):
+    def __init__(self):
+        self.xygrib = ft.CupertinoCheckbox(
+            label="Usar mapa XyGrib",
+            value=False,
+            disabled=True,
+        )
+        self.europe_flight = ft.CupertinoCheckbox(
+            label="Descargar mapas",
+            value=False,
+        )
+        super().__init__(
+            controls=[
+                ft.Text(
+                    value="Solo para vuelos a Europa",
+                    size=20,
+                ),
+                self.europe_flight,
                 ft.Text(
                     value="Solo para vuelos bajos",
                     size=20,

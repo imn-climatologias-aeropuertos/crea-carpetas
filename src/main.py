@@ -3,11 +3,12 @@ import flet as ft
 
 import db.flights as db_fl
 import controls as ct
+import download as dl
 
 from __version__ import version
 
 
-def main(page: ft.Page):
+async def main(page: ft.Page):
     station: ct.Station
     flight: ct.Flight
 
@@ -42,13 +43,23 @@ def main(page: ft.Page):
 
     def flight_radio_changed(e: ft.Event[ft.RadioGroup]):
         flight_type_radio.radio_group.value = e.control.value
-        if flight_type_radio.radio_group.value == "2":
-            flight_type_radio.xygrib.disabled = False
-            flight_type_radio.xygrib.value = True
+
+        if flight_type_radio.radio_group.value == "3":
+            flight_type_checkbox.xygrib.disabled = False
+            flight_type_checkbox.xygrib.value = True
         else:
-            flight_type_radio.xygrib.disabled = True
-            flight_type_radio.xygrib.value = False
+            flight_type_checkbox.xygrib.disabled = True
+            flight_type_checkbox.xygrib.value = False
+
         page.update()
+
+    async def on_click_download(e: ft.ControlEventHandler[ft.Button]):
+        await dl.download_sigwx_maps_async(
+            need_europe_maps=flight_type_checkbox.europe_flight.value
+        )
+        await dl.download_wind_temp_maps_async(
+            need_europe_maps=flight_type_checkbox.europe_flight.value
+        )
 
     station_dropdown = ct.StationDropdown(on_select=station_dropdown_changed)
     flight_dropdown = ct.FlightDropdown(on_select=flight_dropdown_changed)
@@ -68,6 +79,7 @@ def main(page: ft.Page):
     sigwx_maps = ct.SigWxMaps()
     wind_temp_maps = ct.WindTempMaps()
     flight_type_radio = ct.FlightTypeRadio(on_change=flight_radio_changed)
+    flight_type_checkbox = ct.FlightTypeCheckbox()
     download_button = ft.FilledButton(
         content="Descargar Mapas",
         icon=ft.Icons.DOWNLOAD_ROUNDED,
@@ -119,6 +131,7 @@ def main(page: ft.Page):
                                 sigwx_maps,
                                 wind_temp_maps,
                                 flight_type_radio,
+                                flight_type_checkbox,
                                 ct.CustomContainer(
                                     content=ft.Column(
                                         controls=[
