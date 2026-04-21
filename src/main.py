@@ -1,3 +1,5 @@
+from typing import Optional
+
 import flet as ft
 
 
@@ -11,8 +13,27 @@ from __version__ import version
 async def main(page: ft.Page):
     station: ct.Station
     flight: ct.Flight
+    tafs: Optional[str]
+
+    page.window.width = 1000
+    page.window.height = 800
+    page.bgcolor = ft.Colors.BLACK
 
     db_fl.create()
+
+    with open("./trash/vuelos_mod.csv") as f:
+        for line in f:
+            line = line.replace("\n", "").split(",")
+            db_fl.insert(*line)
+
+    # db_fl.insert(
+    #     "LRC618",
+    #     "MROC",
+    #     "KMIA",
+    #     "USSS",
+    # )
+
+    flights_from_db = db_fl.fetch_flights()
 
     def station_dropdown_changed(e):
         station = station_dropdown.station
@@ -61,13 +82,26 @@ async def main(page: ft.Page):
             need_europe_maps=flight_type_checkbox.europe_flight.value
         )
 
+    async def on_click_create(e: ft.ControlEventHandler[ft.Button]):
+        departure = station_dropdown.station.icao
+        first_arrival = first_arrival_dropdown.value
+        second_arrival = second_arrival_dropdown.value
+        tafs = await dl.get_tafs_async(departure, first_arrival, second_arrival)
+
+    # Station dropdown
     station_dropdown = ct.StationDropdown(on_select=station_dropdown_changed)
-    flight_dropdown = ct.FlightDropdown(on_select=flight_dropdown_changed)
+
+    # Flight dropdowns
+    flight_dropdown = ct.FlightDropdown(
+        on_select=flight_dropdown_changed, flights_from_db=flights_from_db
+    )
     first_arrival_dropdown = ct.ArrivalsDropDown(
         on_select=first_arrival_dropdown_changed
     )
     second_arrival_dropdown = ct.ArrivalsDropDown(label="Destino 2")
     add_flight_button = ft.IconButton(icon=ft.Icons.ADD_OUTLINED)
+
+    # Forecast data
     forecaster_name = ft.TextField(label="Nombre del pronosticador")
     document_serial = ft.TextField(label="Número de documento")
     creation_hour = ft.TextField(label="Hora de emisión (UTC)")
@@ -76,10 +110,14 @@ async def main(page: ft.Page):
     wind_dir = ft.TextField(label="Dirección del viento (°)")
     wind_spd = ft.TextField(label="Velocidad del viento (kt)")
     temp = ft.TextField(label="Temperatura (°C)")
+
+    # Hour selection maps
     sigwx_maps = ct.SigWxMaps()
     wind_temp_maps = ct.WindTempMaps()
     flight_type_radio = ct.FlightTypeRadio(on_change=flight_radio_changed)
     flight_type_checkbox = ct.FlightTypeCheckbox()
+
+    # Buttons
     download_button = ft.FilledButton(
         content="Descargar Mapas",
         icon=ft.Icons.DOWNLOAD_ROUNDED,
@@ -88,11 +126,8 @@ async def main(page: ft.Page):
     create_button = ft.FilledButton(
         content="Crear carpeta",
         icon=ft.Icons.FOLDER,
+        on_click=on_click_create,
     )
-
-    page.window.width = 1000
-    page.window.height = 800
-    page.bgcolor = ft.Colors.BLACK
 
     page.add(
         ft.Container(

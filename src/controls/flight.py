@@ -1,4 +1,4 @@
-from typing import List, Callable, Optional
+from typing import List, Callable, Optional, Tuple
 
 import flet as ft
 from pydantic import BaseModel
@@ -14,10 +14,7 @@ class Flight(BaseModel):
     arrivals: str
 
 
-flights_from_db = fetch_flights()
-
-
-def get_flight_labels_options() -> List[ft.DropdownOption]:
+def get_flight_labels_options(flights_from_db: List[Tuple]) -> List[ft.DropdownOption]:
     flight_options = []
 
     for flight in flights_from_db:
@@ -42,8 +39,12 @@ def get_flight_labels_options() -> List[ft.DropdownOption]:
 
 
 class FlightDropdown(ft.Dropdown):
-    def __init__(self, on_select):
-        self.flights = get_flight_labels_options()
+    def __init__(
+        self,
+        on_select: ft.ControlEventHandler[ft.Dropdown],
+        flights_from_db: List[Tuple],
+    ):
+        self.flights = get_flight_labels_options(flights_from_db)
         super().__init__(
             enable_filter=True,
             options=self.flights,
