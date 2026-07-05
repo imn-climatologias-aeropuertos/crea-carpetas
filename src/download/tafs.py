@@ -5,7 +5,7 @@ from typing import List, Optional
 
 import requests
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 from db import fetch_by_icao
 
@@ -92,10 +92,15 @@ def get_tafs(
 
         return "\n\n".join(tafs)
     except requests.exceptions.RequestException as e:
-        print(f"Error al descargar los TAF's: {e}")
+        raise Exception(f"Error al descargar los TAF's: {e}")
     return
 
 
 async def get_tafs_async(*stations: Optional[str]):
-    tafs = await asyncio.to_thread(get_tafs, *stations)
+    try:
+        tafs = await asyncio.to_thread(get_tafs, *stations)
+    except ValidationError as e:
+        raise Exception(
+            f"Error de validación al obtener los códigos ICAO para los TAF's: {e}"
+        )
     return tafs
